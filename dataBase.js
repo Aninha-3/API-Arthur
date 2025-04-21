@@ -12,8 +12,7 @@ connection.connect((err) => {
     if (err) {
         console.error('Erro ao conectar com o database:', err);
         return;
-    }
-    console.log('Connectado ao database!');
+    } console.log('Connectado ao database!');
 });
 
 module.exports = connection;
