@@ -4,7 +4,7 @@ const sequelize = require("./config/dataBase");
 const router = require("./routes/userRoutes");
 const apiPort = 3000;
  
-const app = express();
+const app = express(); // Criando aplicação 
  
 app.use(express.json());
 app.use(cors());
@@ -25,7 +25,7 @@ sequelize.sync({ force: true })
         console.error("Erro na sincronização com MySQL", err);
     });
  
-app.use("/api", router);
+app.use("/api", router); // Desejamos utilizar modelo de conversa JSON
  
 app.listen(apiPort, () => {
     console.log(`API rodando com sucesso na porta ${apiPort}`);
