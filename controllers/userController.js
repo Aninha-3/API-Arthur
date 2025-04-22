@@ -1,4 +1,7 @@
 const User = require("../model/user");
+
+//importar o bcrypt para criptografar a senha
+const bcrypt = require("bcryptjs");
  
 const userController = {
     create: async (request, response) => {
@@ -10,8 +13,11 @@ const userController = {
                     msg: "Campo incorreto ou vazio"
                 });
             }
-            
-            const userCriado = await User.create({ nome, email, senha });
+            // senha criptografada
+            const hashedSenha = await bcrypt.hash(senha, 10);
+
+
+            const userCriado = await User.create({ nome, email, senha: hashedSenha });
  
             return response.status(201).json({
                 msg:" O usuário foi crido com sucesso",
