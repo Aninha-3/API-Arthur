@@ -4,6 +4,16 @@ const User = require("../model/user");
 const bcrypt = require("bcryptjs");
  
 const userController = {
+    //criar login 
+    login: async (request, response) => {
+        const { email, senha } = request.body;
+
+        if (!email || !senha) {
+            return response.status(400).json({
+                msg: "Email e senha são obrigatórios"
+            });
+        }
+    },
     create: async (request, response) => {
         try {
             const { nome, email, senha } = request.body;
