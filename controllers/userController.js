@@ -5,6 +5,12 @@ const userController = {
         try {
             const { nome, email, senha } = request.body;
  
+            if (!nome || !email || !senha) {
+                return response.status(400).json({
+                    msg: "Campo incorreto ou vazio"
+                });
+            }
+            
             const userCriado = await User.create({ nome, email, senha });
  
             return response.status(201).json({
