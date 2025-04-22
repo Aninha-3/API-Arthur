@@ -1,70 +1,113 @@
-const dataBase = require('../dataBase');
-// Criar um usuário
-const createUser = (req, res) => {
-    const { name, email, password } = req.body;
-    const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    dataBase.query(sql, [name, email, password], (err, result) => {
-        if (err) {
-            console.error('Erro ao criar usuário:', err);
-            return res.status(500).json({ error: 'Erro ao criar usuário' });
+const User = require("../model/user");
+ 
+const userController = {
+    create: async (request, response) => {
+        try {
+            const { nome, email, senha } = request.body;
+ 
+            const userCriado = await User.create({ nome, email, senha });
+ 
+            return response.status(201).json({
+                msg:" O usuário foi crido com sucesso",
+                userCriado
+            })
+             
+        } catch (error) {
+            console.log(error)
+            return response.status(500).json({
+                msg: " Ocorreu um erro ao acessar a API"
+            })
         }
-        res.status(201).json({ message: 'Usuário criado com sucesso', userId: result.insertId });
-    });
-};
-
-// Listar todos os usuários
-const getAllUsers = (req, res) => {
-    const sql = 'SELECT * FROM users';
-    dataBase.query(sql, (err, results) => {
-        if (err) {
-            console.error('Erro ao listar usuários:', err);
-            return res.status(500).json({ error: 'Erro ao listar usuários' });
-        }
-        res.status(200).json(results);
-    });
-};
-
-// Buscar um usuário por ID
-exports.getUserById = (req, res) => {
-    const { id } = req.params;
-    dataBase.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
-        if (err) {
-            console.error('Erro ao buscar usuário:', err);
-            return res.status(500).json({ error: 'Erro ao buscar usuário' });
-        }
-        if (results.length === 0) {
-            return res.status(404).json({ message: 'Usuário não encontrado' });
-        }
-        res.status(200).json(results[0]);
-    });
-
-// Atualizar um usuário
-exports.updateUser = (req, res) => {
-    const { id } = req.params;
-    const { nome, email, senha } = req.body;
-    dataBase.query(
-        'UPDATE users SET nome = ?, email = ?, senha = ? WHERE id = ?',
-        [nome, email, senha, id],
-        (err, results) => {
-            if (err) {
-                console.error('Erro ao atualizar usuário:', err);
-                return res.status(500).json({ error: 'Erro ao atualizar usuário' });
+    },
+    update: async (request, response) => {
+        try {
+            const { id } = request.params;
+            const { nome, email, senha } = request.body;
+ 
+            if(!nome || !email || !senha) {
+                return response.status(400).json({
+                    msg: "Campo inconrreto ou vazio"
+                });
             }
-            res.status(200).json({ message: 'Usuário atualizado com sucesso' });
+ 
+            const userExiste = await User.findByPk(id);
+            if(!userExiste) {
+                return response.status(400).json({
+                    msg: "Usuário não encontrado"
+                });
+            }
+ 
+            await User.update({
+                nome, email, senha
+            }, {
+                where: {
+                    id: id
+                }
+            });
+        } catch (error) {
+            return response.status(500).json({
+                msg: " Ocorreu um erro ao acessar a API"
+            })
         }
-    );
-};
-
-// Deletar um usuário
-exports.deleteUser = (req, res) => {
-    const { id } = req.params;
-    dataBase.query('DELETE FROM users WHERE id = ?', [id], (err, results) => {
-        if (err) {
-            console.error('Erro ao deletar usuário:', err);
-            return res.status(500).json({ error: 'Erro ao deletar usuário' });
+     },
+    findAll: async (request, response) => {
+        try {
+            const user = await User.findAll()
+ 
+            return response.status(201).json(user)
+        } catch (erro) {
+            return response.status(500).json({
+                msg: " Ocorreu um erro interno ao buscar todos os usuários"
+            })
         }
-        res.status(200).json({ message: 'Usuário deletado com sucesso' });
-    });
-};
-};
-
+    },
+    delete: async (request, response) => {
+        try {
+            const { id } = request.params;
+            const existeUser = await User.findByPk(id)
+     
+ 
+            if (!existeUser) {
+                return response.status(400).json({
+                    msg: "Usuário não foi encontrado"
+                })
+            }
+            await User.destroy({
+                where: {
+                    id: id
+                }
+            })
+            return response.status(200).json({
+                msg: " O usuário foi deletado com sucesso"
+            })
+ 
+        } catch (erro) {
+            return response.status(500).json({
+                msg: " Ocorreu um erro ao deletar o usuário"
+            })
+        }
+    },
+    findById: async (request, response) => {
+        try {
+           
+            const { id } = request.params;
+ 
+            const userEncontrado = await User.findByPk(id);
+ 
+            if (!existeUser) {
+             
+                return response.status(204).json({
+                    msg: "Usuário não foi encontrado"
+                })
+            }
+            return response.status(200).json(userEncontrado)
+             
+        } catch (error) {
+            return response.status(500).json({
+                msg: " Ocorreu um erro ao deletar o usuário"
+            })
+        }
+    }
+}
+ 
+module.exports = userController;
