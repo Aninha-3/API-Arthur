@@ -55,7 +55,14 @@ const userController = {
                 id: userEncontrado.id,
                 email: userEncontrado.email
 
-            };
+            }
+
+            // Token vai sobreviver por 1h
+            // palavra secreta para criar o token  -> lady_gltter_divonica
+            // bGFkeV9nbHR0ZXJfZGl2b25pY2E=
+             const token = jwt.sign(payload, palavraSecreta, {
+                expiresIn: "1h"
+             });
 
 
             // senha criptografada
