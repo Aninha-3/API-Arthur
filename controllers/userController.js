@@ -1,9 +1,11 @@
 const User = require("../model/user");
 
+
 //importar o bcrypt para criptografar a senha
 const bcrypt = require("bcryptjs");
  
 const userController = {
+
     //criar login 
     login: async (request, response) => {
         const { email, senha } = request.body;
@@ -23,10 +25,41 @@ const userController = {
                     msg: "Campo incorreto ou vazio"
                 });
             }
+
+            const userEncontrado = await User.findOne({
+
+                // SELECT * FROM users WHERE email = email
+                where: {
+                    email: email
+                }
+            });
+              
+            // Adequado ser os dois iguais
+            
+            if (userEncontrado) {
+                return response.status(400).json({
+                    msg: "Usuário ou Senha incorretos"
+                });
+            }
+
+            const isCerto = await bcrypt.compare(senha, userEncontrado.senha);
+
+            if (!isCerto) {
+                return response.status(400).json({
+                    msg: "Usuário ou Senha incorreta"
+                });
+            }
+
+            // Payload -> Conteudo do token
+            const payload = {
+                id: userEncontrado.id,
+                email: userEncontrado.email
+
+            };
+
+
             // senha criptografada
             const hashedSenha = await bcrypt.hash(senha, 10);
-
-
             const userCriado = await User.create({ nome, email, senha: hashedSenha });
  
             return response.status(201).json({
@@ -41,6 +74,7 @@ const userController = {
             })
         }
     },
+
     update: async (request, response) => {
         try {
             const { id } = request.params;
