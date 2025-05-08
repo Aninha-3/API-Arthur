@@ -14,7 +14,7 @@ export function authenticate(req, res, next)  {
     const [Bearer,token ] = authHeader.split(" ");
  
     try {
-        req.user = jwt.verify(token, "paçavra secreta");
+        req.user = jwt.verify(token, "palavra secreta");
         //Caso o token seja valido
         return next();  //prosseguir | siga com a req
     } catch (error) {

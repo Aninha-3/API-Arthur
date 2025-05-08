@@ -7,6 +7,10 @@ const authenticate = require("../middleware/authMiddleware")
  
 const router = Router();
  
+// Login
+router.post("/login", (req, res) => userController.login(req, res));
+
+// CRUD -> Create, Read, Update, Delete
 router.post("/usuario", (request, response) => {
     userController.create(request, response)
 });
