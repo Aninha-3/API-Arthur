@@ -12,5 +12,15 @@ export function authenticate(req, res, next)  {
     }
 
     const [Bearer,token ] = authHeader.split(" ");
-    
+ 
+    try {
+        req.user = jwt.verify(token, "paçavra secreta");
+        //Caso o token seja valido
+        return next();  //prosseguir | siga com a req
+    } catch (error) {
+        // Token invalido ou mal formado
+        return res.status(401).json({
+            msg:"Tokwn inválido ou expirado."
+        })
+    }
 }
